@@ -3,6 +3,7 @@ services:
   - type: web
     name: kite-backend
     runtime: python
+    plan: free
     region: singapore
     rootDir: server
     buildCommand: pip install -r requirements.txt
