@@ -30,7 +30,6 @@ services:
   - type: web
     name: kite-frontend
     runtime: static
-    region: singapore
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     routes:
