@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 
 export const config = {
-    ip: import.meta.env.VITE_DB_IP
+    ip: import.meta.env.VITE_DB_IP || "/api/"
 }
 var sent = false;
 export async function send(x: any) {
