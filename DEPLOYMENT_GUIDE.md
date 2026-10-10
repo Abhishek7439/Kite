@@ -1,107 +1,159 @@
-# 🚀 Kite Social Media — Cloud Deployment Guide
+# 🪁 Kite — Deployment Guide (Render + Aiven MySQL)
 
-This guide details how to deploy the **Kite Social Media Application** (React Frontend + Python Flask REST API + MySQL Database) to production cloud platforms like **Render**, **Vercel**, and **Cloud MySQL Providers** (Aiven / Railway / PlanetScale).
-
----
-
-## 🛠️ Created Deployment Configuration Files
-
-All required cloud deployment configuration files have been created in the repository:
-
-| File | Purpose | Location |
-|---|---|---|
-| 📄 [`render.yaml`](file:///d:/Projects/DBMS%20Project/Kite/render.yaml) | Render Infrastructure-as-Code Blueprint (Web Service + Static Site) | Project Root |
-| 📄 [`server/requirements.txt`](file:///d:/Projects/DBMS%20Project/Kite/server/requirements.txt) | Production Python dependencies (`Flask`, `mysql-connector-python`, `gunicorn`) | `server/` |
-| 📄 [`server/Procfile`](file:///d:/Projects/DBMS%20Project/Kite/server/Procfile) | Gunicorn WSGI web process runner for Flask | `server/` |
-| 📄 [`server/setup_db.sql`](file:///d:/Projects/DBMS%20Project/Kite/server/setup_db.sql) | DDL script to populate production cloud MySQL database | `server/` |
+This guide walks you through deploying the full Kite application:
+- **Frontend** → Render Static Site (free)
+- **Backend** → Render Web Service (free)
+- **Database** → Aiven MySQL (free)
 
 ---
 
-## 🌐 Option 1: 1-Click / Blueprint Deployment on Render (Recommended)
+## Step 1: Set Up Aiven MySQL (Free Cloud Database)
 
-Render offers free hosting for Python Flask web services, static sites, and web applications.
+1. Go to [https://aiven.io/](https://aiven.io/) and **Sign Up** (use GitHub login for speed).
+2. After signing in, click **Create Service**.
+3. Select **MySQL**.
+4. Choose the **Free** plan (Hobbyist).
+5. Pick a region closest to you (e.g., **Google Cloud — Singapore**).
+6. Click **Create Free Service**.
+7. Wait ~2 minutes for the service to be ready.
 
-### Step 1: Push Code to GitHub / GitLab
-1. Create a repository on GitHub (e.g. `Kite-Social-Media`).
-2. Push your project code:
-   ```bash
-   git add .
-   git commit -m "Add production cloud deployment configuration"
-   git push origin main
-   ```
+### Get Your Aiven MySQL Credentials
+
+Once the service is running, go to the **Overview** tab. You'll see:
+
+| Field | Example |
+|-------|---------|
+| **Host** | `mysql-xyz-your-project.a.aivencloud.com` |
+| **Port** | `12345` |
+| **User** | `avnadmin` |
+| **Password** | `AVNS_xxxxxxxxxx` |
+| **Database** | `defaultdb` |
+
+Also download the **CA Certificate** file (`ca.pem`) — you'll need this for SSL.
+
+> **Important**: Note down ALL of these values. You'll enter them in Render.
 
 ---
 
-### Step 2: Set Up Free Cloud MySQL Database
+## Step 2: Deploy on Render
 
-Choose any free managed cloud MySQL provider:
+### 2a. Deploy the Backend (Flask API)
 
-#### Option A: Aiven MySQL (Free 30-day / Free tier)
-1. Sign up at [aiven.io](https://aiven.io).
-2. Create a **MySQL Service**.
-3. Note your connection parameters:
-   - `Host`
-   - `Port` (e.g. `10000-30000`)
-   - `User` (`avnadmin`)
-   - `Password`
-   - `Database Name` (`Kite`)
+1. Go to [https://render.com/](https://render.com/) and **Sign Up / Log In**.
+2. Click **New +** → **Web Service**.
+3. Connect your GitHub account and select the **`Abhishek7439/Kite`** repository.
+4. Configure the service:
 
-#### Option B: Railway.app / PlanetScale / FreeSQLDatabase
-1. Create a free MySQL database on [railway.app](https://railway.app) or [freesqldatabase.com](https://www.freesqldatabase.com).
-2. Obtain your `HOST`, `USER`, `PASSWORD`, and `DATABASE` details.
+| Setting | Value |
+|---------|-------|
+| **Name** | `kite-backend` |
+| **Region** | Singapore (or closest) |
+| **Root Directory** | `server` |
+| **Runtime** | Python |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `gunicorn server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120` |
 
-#### Import Database Schema:
-Run the setup SQL file against your remote database:
-```powershell
-mysql -h <YOUR_REMOTE_HOST> -P <YOUR_REMOTE_PORT> -u <YOUR_REMOTE_USER> -p < server/setup_db.sql
+5. Under **Environment Variables**, add these (using your Aiven values):
+
+| Key | Value |
+|-----|-------|
+| `MYSQL_HOST` | *(your Aiven host)* |
+| `MYSQL_PORT` | *(your Aiven port)* |
+| `MYSQL_USER` | `avnadmin` |
+| `MYSQL_PASSWORD` | *(your Aiven password)* |
+| `MYSQL_DATABASE` | `defaultdb` |
+| `MYSQL_SSL_CA` | `/etc/ssl/certs/ca-certificates.crt` |
+| `IMAGE_DIR` | `/opt/render/project/src/Images` |
+
+6. Select **Free** plan.
+7. Click **Create Web Service**.
+8. Wait for the build to complete (~3-5 minutes).
+9. Once deployed, copy the backend URL (e.g., `https://kite-backend-xxxx.onrender.com/`).
+
+> **Note on SSL**: Aiven requires SSL. The `MYSQL_SSL_CA` path above points to the system CA bundle on Render, which should work with Aiven. If it doesn't, you can paste the CA cert contents into a Render Secret File instead.
+
+---
+
+### 2b. Deploy the Frontend (React Static Site)
+
+1. Go to Render Dashboard → **New +** → **Static Site**.
+2. Connect the same **`Abhishek7439/Kite`** repository.
+3. Configure:
+
+| Setting | Value |
+|---------|-------|
+| **Name** | `kite-frontend` |
+| **Branch** | `main` |
+| **Root Directory** | *(leave empty — root of repo)* |
+| **Build Command** | `npm install && npm run build` |
+| **Publish Directory** | `dist` |
+
+4. Under **Environment Variables**, add:
+
+| Key | Value |
+|-----|-------|
+| `VITE_DB_IP` | `https://kite-backend-xxxx.onrender.com/` ← *(your backend URL from Step 2a, with trailing slash!)* |
+
+5. Click **Create Static Site**.
+6. Wait for the build (~2-3 minutes).
+
+---
+
+## Step 3: Verify Deployment
+
+1. Open your frontend URL (e.g., `https://kite-frontend-xxxx.onrender.com`).
+2. Try creating a new account.
+3. If signup works — 🎉 **You're fully deployed!**
+
+### Quick Health Check
+
+Visit `https://kite-backend-xxxx.onrender.com/health` in your browser. You should see:
+```json
+{"status": "ok"}
 ```
 
 ---
 
-### Step 3: Deploy via Render Blueprint
+## Troubleshooting
 
-1. Go to [dashboard.render.com](https://dashboard.render.com) and log in.
-2. Click **New +** -> **Blueprints**.
-3. Connect your GitHub repository containing `render.yaml`.
-4. Render will automatically detect both services:
-   - **`kite-backend`** (Python Flask API with Gunicorn)
-   - **`kite-frontend`** (React Static Site with Vite)
-5. Fill in the Database Environment Variables when prompted:
-   - `MYSQL_HOST`: Your cloud MySQL host
-   - `MYSQL_USER`: Your cloud MySQL user
-   - `MYSQL_PASSWORD`: Your cloud MySQL password
-   - `MYSQL_DATABASE`: `Kite`
-6. Click **Apply**.
+### Backend won't start
+- Check Render logs for MySQL connection errors
+- Verify your Aiven credentials are correct
+- Make sure the Aiven service status is "Running"
 
-Render will automatically build and deploy both services! 🎉
+### Frontend shows blank or API errors
+- Ensure `VITE_DB_IP` has the **trailing slash** (`/`)
+- Ensure `VITE_DB_IP` starts with `https://`
+- Rebuild the frontend after changing env vars (Render does this automatically)
 
----
+### MySQL SSL errors
+- Try setting `MYSQL_SSL_CA` to an empty string first to test without SSL
+- Or download the Aiven CA cert and upload it as a Render Secret File
 
-## ⚡ Option 2: Deploy Frontend on Vercel + Backend on Render
-
-If you prefer Vercel for ultra-fast frontend CDN deployment:
-
-### 1. Deploy Backend on Render:
-1. Create a **Web Service** on Render pointing to the `server/` directory.
-2. Build Command: `pip install -r requirements.txt`
-3. Start Command: `gunicorn server:app`
-4. Set Environment Variables (`MYSQL_HOST`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`).
-
-### 2. Deploy Frontend on Vercel:
-1. Log in to [vercel.com](https://vercel.com).
-2. Click **Add New** -> **Project** -> Import repository.
-3. Framework Preset: **Vite**
-4. Environment Variables:
-   - `VITE_DB_IP`: `https://your-kite-backend.onrender.com/`
-5. Click **Deploy**.
+### Free tier cold starts
+- Render free tier services spin down after 15 min of inactivity
+- First request after sleep takes ~30 seconds to wake up
+- This is normal behavior for free tier
 
 ---
 
-## 🔍 Local Production Build Verification
+## Architecture Overview
 
-You can verify the production bundle locally anytime:
-```powershell
-npm run build
-npm run preview
 ```
-This serves the compiled production build from `./dist` at `http://localhost:4173`.
+┌─────────────────┐     HTTPS      ┌─────────────────┐     SSL/TCP     ┌─────────────────┐
+│  Render Static  │ ──────────────→│  Render Flask   │ ──────────────→│  Aiven MySQL    │
+│  (React + Vite) │    API calls   │  (Python API)   │   DB queries   │  (Cloud DB)     │
+│  kite-frontend  │                │  kite-backend   │                │  Free Plan      │
+└─────────────────┘                └─────────────────┘                └─────────────────┘
+       ↑                                                                       
+   Browser                                                              
+```
+
+---
+
+## Your Live URLs (fill in after deployment)
+
+- **Frontend**: `https://kite-frontend-____.onrender.com`
+- **Backend API**: `https://kite-backend-____.onrender.com`
+- **Health Check**: `https://kite-backend-____.onrender.com/health`
+- **GitHub Repo**: `https://github.com/Abhishek7439/Kite`

@@ -2,11 +2,12 @@ services:
   # 1. Backend Flask API
   - type: web
     name: kite-backend
-    env: python
+    runtime: python
     region: singapore
     rootDir: server
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn server:app
+    startCommand: gunicorn server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /health
     envVars:
       - key: MYSQL_HOST
         sync: false
@@ -15,14 +16,20 @@ services:
       - key: MYSQL_PASSWORD
         sync: false
       - key: MYSQL_DATABASE
-        value: Kite
-      - key: PORT
-        value: 10000
+        sync: false
+      - key: MYSQL_PORT
+        sync: false
+      - key: MYSQL_SSL_CA
+        sync: false
+      - key: IMAGE_DIR
+        value: /opt/render/project/src/Images
+      - key: PYTHON_VERSION
+        value: 3.11.6
 
-  # 2. Frontend React Vite App
+  # 2. Frontend React Vite App (Static Site)
   - type: web
     name: kite-frontend
-    env: static
+    runtime: static
     region: singapore
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
@@ -32,7 +39,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_DB_IP
-        fromService:
-          type: web
-          name: kite-backend
-          property: url
+        sync: false

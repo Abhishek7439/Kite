@@ -5,11 +5,18 @@ import base64
 import random
 import string
 import os
+
 app = Flask(__name__)
-CORS(app)
+
+# Allow all origins for CORS (required for Render deployment)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 dbase = database.dbase()
 dbase.init()
+
+# Use a writable directory for image uploads on Render
+IMAGE_DIR = os.environ.get('IMAGE_DIR', os.path.join(os.getcwd(), 'server', 'Images'))
+os.makedirs(IMAGE_DIR, exist_ok=True)
 
 
 def save_base64_to_file(base64_string, file_path):
@@ -22,24 +29,29 @@ def save_base64_to_file(base64_string, file_path):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def save_img(base64):
+def save_img(base64_data):
     try:
         res1 = ''.join(random.choices(string.ascii_uppercase +
                              string.digits, k=7))
         res2 = ''.join(random.choices(string.ascii_uppercase +
                              string.digits, k=7))
-        loc = os.getcwd() + '/server/Images/' + res1 + '/' + res2 + '/'
-        os.makedirs(loc)
-        save_base64_to_file(base64, loc+'img.jpeg')
+        loc = os.path.join(IMAGE_DIR, res1, res2)
+        os.makedirs(loc, exist_ok=True)
+        save_base64_to_file(base64_data, os.path.join(loc, 'img.jpeg'))
         return res1+'/'+res2
     except OSError as e:
         print(f"Failed to create directories: {e}")
 
 
+# Health check endpoint for Render
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'ok'}), 200
+
+
 @app.route('/', methods=['POST'])
 def handleRequest():
     data = request.json
-    # print(data)
     x = {'error': -1}
     if data['type'] == 'create-user':
         x = dbase.CreateUser(data)
@@ -83,7 +95,7 @@ def handleRequest():
 
 @app.route('/<s1>/<s2>/')
 def send_image(s1, s2):
-    loc = os.getcwd() + '/server/Images/' + s1 + '/'+s2+'/img.jpeg'
+    loc = os.path.join(IMAGE_DIR, s1, s2, 'img.jpeg')
     
     return send_file(loc, mimetype='image/jpeg')
 
