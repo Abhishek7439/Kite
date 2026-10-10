@@ -1,0 +1,38 @@
+services:
+  # 1. Backend Flask API
+  - type: web
+    name: kite-backend
+    env: python
+    region: singapore
+    rootDir: server
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DATABASE
+        value: Kite
+      - key: PORT
+        value: 10000
+
+  # 2. Frontend React Vite App
+  - type: web
+    name: kite-frontend
+    env: static
+    region: singapore
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_DB_IP
+        fromService:
+          type: web
+          name: kite-backend
+          property: url

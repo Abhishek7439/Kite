@@ -79,57 +79,68 @@ export function Post(props: postPros) {
   }, [isVisible]);
 
   return (
-    <div ref={_ref} className="w-[32rem] p-3 m-3 rounded-xl top-10 bg-gray-400">
+    <div ref={_ref} className="w-[32rem] p-4 m-3 rounded-2xl top-10 animate-fade-in"
+         style={{
+           background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.6))',
+           border: '1px solid rgba(99, 102, 241, 0.12)',
+           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.3)',
+           backdropFilter: 'blur(12px)',
+         }}>
       <div className="mb-3">
         <img
-          src={toImg(props.pfp)}
-          className="w-20 h-20 mr-3 inline-block rounded-full object-cover"
+          src={toImg(props.pfp, props.uname)}
+          className="w-14 h-14 mr-3 inline-block rounded-full object-cover"
+          style={{ border: '2px solid rgba(99, 102, 241, 0.3)' }}
         />
-        <div className=" inline-block relative translate-y-2 text-white ">
-          <div className="text-xl">{props.uname}</div>
-          <div className="opacity-0">.</div>
+        <div className=" inline-block relative translate-y-1 text-slate-200 ">
+          <div className="text-lg font-semibold">{props.uname}</div>
         </div>
       </div>
       <hr />
-      <div className="text-white">
+      <div className="text-slate-200 my-2">
         {props.src && (
           <img
             src={toImg(props.src as string)}
-            className="h-min w-96 mx-auto object-contain"
+            className="h-min w-full mx-auto object-contain rounded-xl"
           />
         )}
-        <hr />
-        {props.text}
+        <div className="mt-2 text-slate-300">{props.text}</div>
       </div>
       <hr />
-      <div className="mt-3 text-white">
+      <div className="mt-3">
         <div
           onClick={likedChange}
-          className="inline-block mx-5 px-4 py-2 rounded-xl hover:bg-gray-500 hover:cursor-pointer transition-all duration-100"
+          className="inline-block mx-3 px-4 py-2 rounded-xl hover:cursor-pointer transition-all duration-200"
+          style={{ color: liked ? '#818cf8' : '#94a3b8' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <span
             className={
               "material-symbols-rounded pr-3 text-3xl " +
-              (liked && "text-blue-500")
+              (liked && "text-indigo-400")
             }
           >
             thumb_up
           </span>
-          <div className="inline-block relative -translate-y-2">Like</div>
+          <div className="inline-block relative -translate-y-2 font-medium">Like</div>
         </div>
         <div
           onClick={saveChange}
-          className="inline-block mx-5 px-4 py-2 rounded-xl hover:bg-gray-500 hover:cursor-pointer transition-all duration-100"
+          className="inline-block mx-3 px-4 py-2 rounded-xl hover:cursor-pointer transition-all duration-200"
+          style={{ color: saved ? '#818cf8' : '#94a3b8' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <span
             className={
               "material-symbols-rounded pr-3 text-3xl " +
-              (saved && "text-blue-500")
+              (saved && "text-indigo-400")
             }
           >
             Bookmark
           </span>
-          <div className="inline-block relative -translate-y-2">Save</div>
+          <div className="inline-block relative -translate-y-2 font-medium">Save</div>
         </div>
       </div>
     </div>
@@ -163,8 +174,23 @@ export default function Home(props: homeProps) {
         setLoggedIn={props.setLoggedIn}
       />
       <div className="ml-80">
-        <div className="mx-auto flex w-[56rem] m-2 px-2 rounded-xl bg-gray-400">
-          <div className="w-[10.5rem] h-[5.5rem] my-3 mx-1 rounded-2xl bg-gradient-to-tr from-teal-500 to-green-300"></div>
+        <div className="mx-auto flex w-[56rem] m-2 px-6 py-4 rounded-2xl items-center gap-6 overflow-x-auto"
+             style={{
+               background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.4))',
+               border: '1px solid rgba(99, 102, 241, 0.1)',
+             }}>
+             {/* Dummy Story Circles for Visual Enhancement */}
+             {[1, 2, 3, 4, 5, 6].map((i) => (
+                 <div key={i} className="flex flex-col items-center gap-2 cursor-pointer flex-shrink-0 group">
+                    <div className="w-16 h-16 rounded-full p-[2px] transition-transform duration-300 group-hover:scale-105"
+                         style={{ background: 'linear-gradient(135deg, #6366f1, #a78bfa, #ec4899)' }}>
+                        <div className="w-full h-full rounded-full border-2 border-slate-900 overflow-hidden bg-slate-800">
+                             <img src={`https://api.dicebear.com/9.x/glass/svg?seed=Story${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                        </div>
+                    </div>
+                    <span className="text-xs text-slate-400 font-medium group-hover:text-slate-200 transition-colors">User {i}</span>
+                 </div>
+             ))}
         </div>
         <div className="mx-auto w-min mt-14">
           {data.map((el: any, index: number, arr: never[]) => {

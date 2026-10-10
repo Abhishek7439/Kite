@@ -63,24 +63,45 @@ export default function CreatePost(props: props) {
   }
 
   return (
-    <div className="absolute z-30 w-screen h-screen ">
-      <div className="bg-gray-300 absolute rounded-xl border-2 border-gray-200  w-1/2 h-[40rem] right-1/4 top-10 overflow-y-auto">
+    <div className="absolute z-30 w-screen h-screen"
+         style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(4px)' }}>
+      <div className="absolute rounded-2xl w-1/2 right-1/4 top-10 overflow-y-auto animate-fade-in"
+           style={{
+             background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))',
+             border: '1px solid rgba(99, 102, 241, 0.2)',
+             boxShadow: '0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(99, 102, 241, 0.1)',
+             backdropFilter: 'blur(20px)',
+             maxHeight: '40rem',
+           }}>
         <span
           onClick={() => {
             props.setEnabled(false);
           }}
-          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer hover:bg-gray-400 rounded-full"
+          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer rounded-full transition-all duration-200"
+          style={{ color: '#94a3b8' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.2)'; e.currentTarget.style.color = '#818cf8'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
         >
           Close
         </span>
-        <div className="text-2xl m-5">Create Post</div>
+        <div className="text-2xl m-5 font-bold"
+             style={{
+               background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
+               WebkitBackgroundClip: 'text',
+               WebkitTextFillColor: 'transparent',
+             }}>Create Post</div>
         <hr />
         <div
           onClick={imageSubmit}
           className={
             (src ? "" : "border-dashed") +
-            " border w-1/2 h-96 border-gray-600 mx-auto mt-10 flex justify-center rounded-xl"
+            " border w-1/2 h-96 mx-auto mt-10 flex justify-center rounded-xl transition-all duration-200"
           }
+          style={{
+            borderColor: 'rgba(99, 102, 241, 0.3)',
+            background: src ? 'transparent' : 'rgba(99, 102, 241, 0.05)',
+            cursor: 'pointer',
+          }}
         >
           <input
             onChange={handleFileChange}
@@ -90,10 +111,11 @@ export default function CreatePost(props: props) {
             accept="image/*"
           />
           {src != "" ? (
-            <img src={src} className="object-contain" />
+            <img src={src} className="object-contain rounded-xl" />
           ) : (
-            <div>
-              <span className="material-symbols-rounded block text-7xl mt-36 mx-8">
+            <div className="text-center" style={{ color: '#64748b' }}>
+              <span className="material-symbols-rounded block text-7xl mt-36 mx-8"
+                    style={{ color: '#6366f1' }}>
                 photo_library
               </span>
               Click To Choose File
@@ -102,35 +124,47 @@ export default function CreatePost(props: props) {
         </div>
         <textarea
           id="Text"
-          placeholder="Text"
+          placeholder="What's on your mind?"
           maxLength={255}
-          className="relative translate-x-1/2 mt-5 p-3 w-1/2 h-40 text-xl resize-none rounded-xl bg-white hover:cursor-text hover:border-blue-500 border border-gray-500"
+          className="relative translate-x-1/2 mt-5 p-3 w-1/2 h-40 text-xl resize-none rounded-xl"
         />
 
-        <div className="mx-auto w-64 flex mt-10 mb-20 rounded-full bg-gray-200 border-gray-400 border">
+        <div className="mx-auto w-64 flex mt-10 mb-20 rounded-full overflow-hidden"
+             style={{
+               background: 'rgba(30, 41, 59, 0.8)',
+               border: '1px solid rgba(99, 102, 241, 0.2)',
+             }}>
           <div
             onClick={() => setPostType(0)}
-            className="w-32 px-9 py-3 text-2xl rounded-full hover:cursor-pointer"
+            className={"w-32 px-9 py-3 text-xl rounded-full hover:cursor-pointer transition-all duration-200 text-center font-medium"}
+            style={{
+              background: postType === 0 ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
+              color: postType === 0 ? '#fff' : '#94a3b8',
+            }}
           >
             Public
           </div>
           <div
             onClick={() => setPostType(1)}
-            className="w-32 px-10 py-3 text-2xl rounded-full hover:cursor-pointer"
+            className={"w-32 px-10 py-3 text-xl rounded-full hover:cursor-pointer transition-all duration-200 text-center font-medium"}
+            style={{
+              background: postType === 1 ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'transparent',
+              color: postType === 1 ? '#fff' : '#94a3b8',
+            }}
           >
             Private
           </div>
-          <div
-            className={
-              "w-32 px-16 bg-opacity-10 bg-black relative rounded-full transition-all " +
-              (postType ? "-translate-x-32" : "-translate-x-64")
-            }
-          ></div>
         </div>
         <br />
         <button
           onClick={submit}
-          className="m-5 text-xl absolute right-24 -translate-y-24"
+          className="m-5 text-xl absolute right-24 -translate-y-24 font-semibold"
+          style={{
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            border: 'none',
+            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+            padding: '0.7em 2em',
+          }}
         >
           Save
         </button>

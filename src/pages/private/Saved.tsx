@@ -17,6 +17,12 @@ interface savedProps {
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const gradientText = {
+  background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
+  WebkitBackgroundClip: 'text' as const,
+  WebkitTextFillColor: 'transparent',
+};
+
 export default function Saved(props: savedProps) {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -41,11 +47,12 @@ export default function Saved(props: savedProps) {
         user={props.user}
         setLoggedIn={props.setLoggedIn}
       />
-      <div className="ml-80">
-        <div className="text-5xl mt-6 ml-6">Saved Posts -</div>
-        <hr className="border-gray-700" />
-        <div className="mx-auto w-min mt-14">
-          {data.map((el: any, index: number, arr: never[]) => {
+      <div className="ml-80 animate-fade-in">
+        <div className="text-5xl mt-6 ml-6 font-bold" style={gradientText}>Saved Posts</div>
+        <hr className="border-gray-700 my-4" />
+        <div className="mx-auto w-min mt-10">
+          {data.length === 0 && <div className="text-slate-400 text-xl whitespace-nowrap mt-10">No saved posts yet.</div>}
+          {data.map((el: any, index: number) => {
             return (
               <Post
                 pid={el[0]}

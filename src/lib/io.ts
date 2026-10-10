@@ -48,10 +48,13 @@ export function isAlphaNum(x: string) {
     return regex.test(x);
 }
 
-export function toImg(x: string) {
-    return config.ip+x
+export function toImg(x: string, seed?: string) {
+    if (!x || x === 'def/pfp') {
+        return `https://api.dicebear.com/9.x/glass/svg?seed=${seed || 'KiteUser'}`;
+    }
+    if (x.startsWith('http')) return x;
+    return config.ip + x;
 }
-
 export function toBase64(file: File) {
     return new Promise<string | undefined>((resolve, reject) => {
       const reader = new FileReader();

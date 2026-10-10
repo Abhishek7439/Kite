@@ -23,6 +23,24 @@ interface relationProps {
   setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const glassStyle = {
+  background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.85))',
+  border: '1px solid rgba(99, 102, 241, 0.15)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+  backdropFilter: 'blur(20px)',
+};
+
+const overlayStyle = {
+  background: 'rgba(0, 0, 0, 0.6)',
+  backdropFilter: 'blur(4px)',
+};
+
+const gradientText = {
+  background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
+  WebkitBackgroundClip: 'text' as const,
+  WebkitTextFillColor: 'transparent',
+};
+
 function Relations(props: relationProps) {
   const [data, setData] = useState([]);
 
@@ -46,25 +64,30 @@ function Relations(props: relationProps) {
   }, []);
 
   return (
-    <div className={"absolute z-20 w-screen h-screen "}>
+    <div className={"absolute z-20 w-screen h-screen "} style={overlayStyle}>
       <div
         className={
-          "w-[36rem] h-[48rem] fixed left-1/3 top-8 rounded-3xl p-4 z-10 bg-gray-200 overflow-y-scroll"
+          "w-[36rem] h-[48rem] fixed left-1/3 top-8 rounded-2xl p-4 z-10 overflow-y-scroll animate-fade-in"
         }
+        style={glassStyle}
       >
         <span
           onClick={() => {
             props.setEnabled(false);
           }}
-          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer hover:bg-gray-400 rounded-full"
+          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer rounded-full transition-all duration-200"
+          style={{ color: '#94a3b8' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.2)'; e.currentTarget.style.color = '#818cf8'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
         >
           Close
         </span>
-        <div className="text-3xl ml-5">{props.type}</div>
+        <div className="text-3xl ml-5 font-bold" style={gradientText}>{props.type}</div>
         <hr className="my-3" />
         {data.map((el: any) => {
           return (
             <div
+              key={el[1]}
               onClick={() => {
                 received = false;
                 props.setEnabled(false);
@@ -136,7 +159,7 @@ export default function User(props: userProps) {
       setMsgData(_msgData);
     }
     res();
-  }, []);
+  }, [uName]);
 
   async function followReq() {
     const x = {
@@ -148,6 +171,11 @@ export default function User(props: userProps) {
     if (y.error == 0) {
       setButText(y._action);
       console.log(y._action);
+      if (y._action === 'Following') {
+          setFollower(follower + 1);
+      } else {
+          setFollower(follower - 1);
+      }
     }
   }
 
@@ -165,36 +193,38 @@ export default function User(props: userProps) {
           type={relationType}
         />
       )}
-      <div className="ml-80 mt-10">
+      <div className="ml-80 mt-10 animate-fade-in">
         <div className="grid w-1/2 mb-10 mx-auto">
-          <img
-            src={toImg(image)}
-            className="w-40 h-40 mr-14 object-cover rounded-full"
-            style={{ gridColumn: "1", gridRow: "1 / span 3" }}
-          />
+          <div className="rounded-full p-1 w-[10.5rem]"
+               style={{ gridColumn: "1", gridRow: "1 / span 3", background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa)' }}>
+            <img
+              src={toImg(image, uName)}
+              className="w-40 h-40 mr-14 object-cover rounded-full"
+            />
+          </div>
           <div
-            className="mt-5 text-2xl"
+            className="mt-5 text-2xl font-bold text-slate-100"
             style={{ gridColumn: "2", gridRow: "1" }}
           >
             {uName}
           </div>
-          <div className="text-2xl" style={{ gridColumn: "2", gridRow: "2" }}>
+          <div className="text-2xl text-slate-300" style={{ gridColumn: "2", gridRow: "2" }}>
             {rName}
           </div>
           <div
-            className="mb-4 text-xl"
+            className="mb-4 text-xl text-slate-400"
             style={{ gridColumn: "2", gridRow: "3" }}
           >
-            <span> {postNo} posts </span>
+            <span className="font-semibold text-slate-200">{postNo}</span> posts
             &emsp;
             <span
               onClick={() => {
                 setRelationWindow(true);
                 setRelationType("Followers");
               }}
-              className="hover:cursor-pointer"
+              className="hover:cursor-pointer transition-colors duration-200 hover:text-indigo-400"
             >
-              {follower} followers
+              <span className="font-semibold text-slate-200">{follower}</span> followers
             </span>
             &emsp;
             <span
@@ -202,25 +232,30 @@ export default function User(props: userProps) {
                 setRelationWindow(true);
                 setRelationType("Following");
               }}
-              className="hover:cursor-pointer"
+              className="hover:cursor-pointer transition-colors duration-200 hover:text-indigo-400"
             >
-              {following} following
+              <span className="font-semibold text-slate-200">{following}</span> following
             </span>
           </div>
           <button
-            className={"mb-4 " + (butText == "Follow" || "text-green-400")}
-            style={{ gridColumn: "2", gridRow: "4" }}
+            className={"mb-4 font-semibold "}
+            style={{ gridColumn: "2", gridRow: "4", 
+                     background: butText === "Following" ? 'transparent' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                     border: butText === "Following" ? '1px solid #818cf8' : 'none',
+                     color: butText === "Following" ? '#818cf8' : '#fff',
+                     width: 'fit-content'
+                   }}
             onClick={followReq}
           >
             {butText}
           </button>
-          <div style={{ gridColumn: "2", gridRow: "5" }}>{bio}</div>
+          <div style={{ gridColumn: "2", gridRow: "5" }} className="text-slate-300">{bio}</div>
         </div>
         <hr className="w-1/2 mb-5 mx-auto border-gray-700" />
-        <div className="w-1/2 mb-5 mx-auto text-3xl">Posts - </div>
+        <div className="w-1/2 mb-5 mx-auto text-3xl font-bold" style={gradientText}>Posts</div>
         <div className="mx-auto flex justify-center">
           <div className="w-1/2 inline-block text-xl">
-            {imgData.length == 0 && msgData.length == 0 && "No Posts Found"}
+            {imgData.length == 0 && msgData.length == 0 && <div className="text-slate-400">No Posts Found</div>}
             {imgData.map(
               (
                 value: (string | number)[],
@@ -229,7 +264,7 @@ export default function User(props: userProps) {
               ) => {
                 if (index % 3 == 0)
                   return (
-                    <div className=" flex flex-row">
+                    <div className=" flex flex-row" key={index}>
                       {index < array.length && (
                         <Post
                           user={props.user}
@@ -288,7 +323,7 @@ export default function User(props: userProps) {
                   src={value[2]}
                   uname={uName as string}
                   pfp={image}
-                  own={true}
+                  own={false}
                   saved={value[6] != null}
                   liked={value[5] != null}
                 />

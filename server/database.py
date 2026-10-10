@@ -1,12 +1,14 @@
+import os
 import mysql.connector
 
 class dbase:
     def init(self):
         self.connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='ViciousCat@123',
-            database='Kite'
+            host=os.environ.get('MYSQL_HOST', 'localhost'),
+            user=os.environ.get('MYSQL_USER', 'root'),
+            password=os.environ.get('MYSQL_PASSWORD', 'Kite@2024'),
+            database=os.environ.get('MYSQL_DATABASE', 'Kite'),
+            port=int(os.environ.get('MYSQL_PORT', 3306))
         )
         self.cursor = self.connection.cursor()
 

@@ -65,6 +65,28 @@ interface postPanelPros {
 
 var EditSend = false;
 
+const glassStyle = {
+  background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.85))',
+  border: '1px solid rgba(99, 102, 241, 0.15)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+  backdropFilter: 'blur(20px)',
+};
+
+const overlayStyle = {
+  background: 'rgba(0, 0, 0, 0.6)',
+  backdropFilter: 'blur(4px)',
+};
+
+const gradientText = {
+  background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
+  WebkitBackgroundClip: 'text' as const,
+  WebkitTextFillColor: 'transparent',
+};
+
+const actionBtnStyle = (active: boolean) => ({
+  color: active ? '#818cf8' : '#94a3b8',
+});
+
 export function PostPanel(props: postPanelPros) {
   const [saved, setSaved] = useState(props.saved);
   const [liked, setLiked] = useState(props.liked);
@@ -96,74 +118,76 @@ export function PostPanel(props: postPanelPros) {
     props.setEnabled(false);
   }
   return (
-    <div className={"absolute z-50 w-screen h-screen right-0 top-0"}>
-      <div className="w-[40rem] p-3 rounded-xl fixed right-1/3 top-10 bg-gray-400">
+    <div className={"absolute z-50 w-screen h-screen right-0 top-0"} style={overlayStyle}>
+      <div className="w-[40rem] p-4 rounded-2xl fixed right-1/3 top-10 animate-fade-in" style={glassStyle}>
         <div className="mb-3">
           <img
-            src={toImg(props.pfp)}
-            className="w-20 h-20 mr-3 inline-block rounded-full object-cover"
+            src={toImg(props.pfp, props.uname)}
+            className="w-16 h-16 mr-3 inline-block rounded-full object-cover"
+            style={{ border: '2px solid rgba(99, 102, 241, 0.3)' }}
           />
-          <div className=" inline-block relative translate-y-2 text-white ">
-            <div className="text-xl">{props.uname}</div>
-            <div className="opacity-0">.</div>
+          <div className=" inline-block relative translate-y-1 text-slate-200 ">
+            <div className="text-xl font-semibold">{props.uname}</div>
           </div>
           <span
             onClick={() => props.setEnabled(false)}
-            className="material-symbols-rounded absolute right-3 pr-3 w-14 h-14 p-1 text-5xl text-white hover:cursor-pointer hover:bg-gray-800 rounded-full"
+            className="material-symbols-rounded absolute right-3 pr-3 w-14 h-14 p-1 text-5xl hover:cursor-pointer rounded-full transition-all duration-200"
+            style={{ color: '#94a3b8' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.2)'; e.currentTarget.style.color = '#818cf8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
           >
             close
           </span>
         </div>
         <hr />
-        <div className="text-white">
+        <div className="text-slate-200 my-2">
           {props.src && (
             <img
               src={toImg(props.src as string)}
-              className="h-min w-96 mx-auto object-contain"
+              className="h-min w-96 mx-auto object-contain rounded-xl"
             />
           )}
           <hr />
-          {props.text}
+          <div className="mt-2 text-slate-300">{props.text}</div>
         </div>
         <hr />
-        <div className="mt-3 text-white">
+        <div className="mt-3">
           <div
             onClick={likedChange}
-            className="inline-block mx-5 px-4 py-2 rounded-xl hover:bg-gray-500 hover:cursor-pointer transition-all duration-100"
+            className="inline-block mx-3 px-4 py-2 rounded-xl hover:cursor-pointer transition-all duration-200"
+            style={actionBtnStyle(liked)}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span
-              className={
-                "material-symbols-rounded pr-3 text-3xl " +
-                (liked && "text-blue-500")
-              }
-            >
+            <span className={"material-symbols-rounded pr-3 text-3xl " + (liked && "text-indigo-400")}>
               thumb_up
             </span>
-            <div className="inline-block relative -translate-y-2">Like</div>
+            <div className="inline-block relative -translate-y-2 font-medium">Like</div>
           </div>
           <div
             onClick={saveChange}
-            className="inline-block mx-5 px-4 py-2 rounded-xl hover:bg-gray-500 hover:cursor-pointer transition-all duration-100"
+            className="inline-block mx-3 px-4 py-2 rounded-xl hover:cursor-pointer transition-all duration-200"
+            style={actionBtnStyle(saved)}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span
-              className={
-                "material-symbols-rounded pr-3 text-3xl " +
-                (saved && "text-blue-500")
-              }
-            >
+            <span className={"material-symbols-rounded pr-3 text-3xl " + (saved && "text-indigo-400")}>
               Bookmark
             </span>
-            <div className="inline-block relative -translate-y-2">Save</div>
+            <div className="inline-block relative -translate-y-2 font-medium">Save</div>
           </div>
           {props.own && (
             <div
               onClick={deletePost}
-              className="inline-block ml-32 px-4 py-2 rounded-xl hover:bg-gray-500 hover:cursor-pointer transition-all duration-100"
+              className="inline-block ml-32 px-4 py-2 rounded-xl hover:cursor-pointer transition-all duration-200"
+              style={{ color: '#f87171' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(248, 113, 113, 0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
               <span className="material-symbols-rounded pr-3 text-3xl">
                 Delete
               </span>
-              <div className="inline-block relative -translate-y-2">Delete</div>
+              <div className="inline-block relative -translate-y-2 font-medium">Delete</div>
             </div>
           )}
         </div>
@@ -192,11 +216,16 @@ export function Post(props: postProps) {
 
       <div
         onClick={() => setEnabled(true)}
-        className="w-60 aspect-square rounded-2xl m-2 bg-gray-600 hover:cursor-pointer hover:m-0 hover:w-64 transition-all"
+        className="w-60 aspect-square rounded-2xl m-2 hover:cursor-pointer hover:m-0 hover:w-64 transition-all overflow-hidden"
+        style={{
+          background: 'rgba(30, 41, 59, 0.5)',
+          border: '1px solid rgba(99, 102, 241, 0.1)',
+          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+        }}
       >
         <img
           src={toImg(props.src.toString())}
-          className="rounded-2xl object-cover w-full h-full"
+          className="rounded-2xl object-cover w-full h-full transition-all duration-300 hover:scale-105"
         />
       </div>
     </>
@@ -223,7 +252,12 @@ export function TextPost(props: postProps) {
       )}
       <div
         onClick={() => setEnabled(true)}
-        className="w-96 h-32 p-3 my-2 overflow-hidden hover:cursor-pointer rounded-xl text-white bg-gray-700"
+        className="w-96 h-32 p-3 my-2 overflow-hidden hover:cursor-pointer rounded-xl transition-all duration-200"
+        style={{
+          background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.5))',
+          border: '1px solid rgba(99, 102, 241, 0.1)',
+          color: '#e2e8f0',
+        }}
       >
         {props.text}
       </div>
@@ -231,7 +265,7 @@ export function TextPost(props: postProps) {
   );
 }
 function EditProfile(props: editProfileProps) {
-  const [src, setSrc] = useState(toImg(props.pfp));
+  const [src, setSrc] = useState(toImg(props.pfp, props.uName));
   const [er, setEr] = useState("");
 
   const handleFileChange = (event: any) => {
@@ -264,7 +298,7 @@ function EditProfile(props: editProfileProps) {
       const y = await send(x);
       const pfp = document.getElementById("edit-pfp") as HTMLImageElement;
 
-      pfp.src = toImg(y.loc);
+      pfp.src = toImg(y.loc, props.uName);
       return y.loc;
     }
   }
@@ -350,21 +384,26 @@ function EditProfile(props: editProfileProps) {
   }
 
   return (
-    <div className={"absolute z-20 w-screen h-screen "}>
+    <div className={"absolute z-20 w-screen h-screen "} style={overlayStyle}>
       <div
         className={
-          "w-[36rem] h-[48rem] fixed left-1/3 top-8 rounded-3xl p-4 z-10 bg-gray-300 overflow-y-scroll"
+          "w-[36rem] h-[48rem] fixed left-1/3 top-8 rounded-2xl p-4 z-10 overflow-y-scroll animate-fade-in"
         }
+        style={glassStyle}
       >
         <span
           onClick={() => props.setEdit(false)}
-          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer hover:bg-gray-400 rounded-full"
+          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer rounded-full transition-all duration-200"
+          style={{ color: '#94a3b8' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.2)'; e.currentTarget.style.color = '#818cf8'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
         >
           Close
         </span>
-        <div className="text-3xl ml-5">Edit Profile -</div>
+        <div className="text-3xl ml-5 font-bold" style={gradientText}>Edit Profile</div>
         <hr className="mt-3" />
-        <div className="bg-gradient-to-r from-teal-300 to-teal-500 p-1 w-[10.5rem] inline-block mt-7 ml-5 rounded-full">
+        <div className="inline-block mt-7 ml-5 rounded-full p-1"
+             style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa)' }}>
           <img
             src={src}
             id="edit-pfp"
@@ -384,36 +423,36 @@ function EditProfile(props: editProfileProps) {
           id="image-file"
           accept="image/*"
         />
-        <hr className="my-3 mx-10 border-gray-400" />
-        <div className="ml-10 text-2xl">Enter User name -</div>
+        <hr className="my-3 mx-10" />
+        <div className="ml-10 text-2xl text-slate-300 font-medium">Enter User name</div>
         <input
           type="text"
           id="EUname"
           maxLength={255}
           defaultValue={props.uName}
           placeholder="User name"
-          className="ml-10 my-2 w-96 text-xl hover:cursor-text border border-gray-500"
+          className="ml-10 my-2 w-96 text-xl"
         />
-        <div className="ml-10 text-2xl">Enter Real name -</div>
+        <div className="ml-10 text-2xl text-slate-300 font-medium">Enter Real name</div>
         <input
           type="text"
           id="ERname"
           maxLength={255}
           defaultValue={props.rName}
           placeholder="Real name"
-          className="ml-10 my-2 w-96 text-xl hover:cursor-text border border-gray-500"
+          className="ml-10 my-2 w-96 text-xl"
         />
-        <div className="ml-10 text-2xl">Enter Bio -</div>
+        <div className="ml-10 text-2xl text-slate-300 font-medium">Enter Bio</div>
         <textarea
           id="EBio"
           defaultValue={props.bio}
           placeholder="Bio"
           maxLength={255}
-          className="ml-10 my-2 p-2 w-96 h-40 text-xl resize-none rounded-xl bg-white hover:cursor-text hover:border-blue-500 border border-gray-500"
+          className="ml-10 my-2 p-2 w-96 h-40 text-xl resize-none rounded-xl"
         />
-        <hr className="my-3 mx-10 border-gray-400" />
+        <hr className="my-3 mx-10" />
 
-        <div className="ml-10 text-2xl">Enter Email -</div>
+        <div className="ml-10 text-2xl text-slate-300 font-medium">Enter Email</div>
         <input
           type="text"
           id="EEmail"
@@ -423,28 +462,33 @@ function EditProfile(props: editProfileProps) {
             "***" +
             props.email.substring(props.email.indexOf("@"))
           }
-          className="ml-10 my-2 w-96 text-xl hover:cursor-text border border-gray-500"
+          className="ml-10 my-2 w-96 text-xl"
         />
-        <div className="ml-10 text-2xl">Enter Password -</div>
+        <div className="ml-10 text-2xl text-slate-300 font-medium">Enter Password</div>
         <input
           type="password"
           id="EPass"
           maxLength={255}
           placeholder="Password"
           autoComplete="new-password"
-          className="ml-10 my-2 w-96 text-xl hover:cursor-text border border-gray-500"
+          className="ml-10 my-2 w-96 text-xl"
         />
-        <div className="ml-10 text-2xl">Re-enter Password -</div>
+        <div className="ml-10 text-2xl text-slate-300 font-medium">Re-enter Password</div>
         <input
           type="password"
           id="ERPass"
           maxLength={255}
           placeholder="Repeat Password"
-          className="ml-10 my-2 w-96 text-xl hover:cursor-text border border-gray-500"
+          className="ml-10 my-2 w-96 text-xl"
         />
-        <hr className="my-3 mx-10 border-gray-400 " />
-        <div className="mb-5 text-center text-red-500 text-xl">{er}</div>
-        <button id="" onClick={submit} className="relative translate-x-72 mb-3">
+        <hr className="my-3 mx-10" />
+        <div className="mb-5 text-center text-red-400 text-xl">{er}</div>
+        <button id="" onClick={submit} className="relative translate-x-72 mb-3 font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  border: 'none',
+                  boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+                }}>
           Change
         </button>
       </div>
@@ -471,21 +515,25 @@ function Relations(props: relationProps) {
   }, []);
 
   return (
-    <div className={"absolute z-20 w-screen h-screen "}>
+    <div className={"absolute z-20 w-screen h-screen "} style={overlayStyle}>
       <div
         className={
-          "w-[36rem] h-[48rem] fixed left-1/3 top-8 rounded-3xl p-4 z-10 bg-gray-200 overflow-y-scroll"
+          "w-[36rem] h-[48rem] fixed left-1/3 top-8 rounded-2xl p-4 z-10 overflow-y-scroll animate-fade-in"
         }
+        style={glassStyle}
       >
         <span
           onClick={() => {
             props.setEnabled(false);
           }}
-          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer hover:bg-gray-400 rounded-full"
+          className="material-symbols-rounded p-1 px-2 absolute right-5 top-3 text-3xl hover:cursor-pointer rounded-full transition-all duration-200"
+          style={{ color: '#94a3b8' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99, 102, 241, 0.2)'; e.currentTarget.style.color = '#818cf8'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
         >
           Close
         </span>
-        <div className="text-3xl ml-5">{props.type}</div>
+        <div className="text-3xl ml-5 font-bold" style={gradientText}>{props.type}</div>
         <hr className="my-3" />
         {data.map((el: any) => {
           return (
@@ -575,36 +623,38 @@ export default function Profile(props: profileProps) {
           pfp={image}
         />
       )}
-      <div className="ml-80 mt-10">
+      <div className="ml-80 mt-10 animate-fade-in">
         <div className="grid w-1/2 mb-10 mx-auto">
-          <img
-            src={toImg(image)}
-            className="w-40 h-40 mr-14 object-cover rounded-full"
-            style={{ gridColumn: "1", gridRow: "1 / span 3" }}
-          />
+          <div className="rounded-full p-1 w-[10.5rem]"
+               style={{ gridColumn: "1", gridRow: "1 / span 3", background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa)' }}>
+            <img
+              src={toImg(image, uName)}
+              className="w-40 h-40 mr-14 object-cover rounded-full"
+            />
+          </div>
           <div
-            className="mt-5 text-2xl"
+            className="mt-5 text-2xl font-bold text-slate-100"
             style={{ gridColumn: "2", gridRow: "1" }}
           >
             {uName}
           </div>
-          <div className="text-2xl" style={{ gridColumn: "2", gridRow: "2" }}>
+          <div className="text-2xl text-slate-300" style={{ gridColumn: "2", gridRow: "2" }}>
             {rName}
           </div>
           <div
-            className="mb-8 text-xl"
+            className="mb-8 text-xl text-slate-400"
             style={{ gridColumn: "2 / span 2", gridRow: "3" }}
           >
-            <span> {postNo} posts </span>
+            <span className="font-semibold text-slate-200">{postNo}</span> posts
             &emsp;
             <span
               onClick={() => {
                 setRelationWindow(true);
                 setRelationType("Followers");
               }}
-              className="hover:cursor-pointer"
+              className="hover:cursor-pointer transition-colors duration-200 hover:text-indigo-400"
             >
-              {follower} followers
+              <span className="font-semibold text-slate-200">{follower}</span> followers
             </span>
             &emsp;
             <span
@@ -612,20 +662,20 @@ export default function Profile(props: profileProps) {
                 setRelationWindow(true);
                 setRelationType("Following");
               }}
-              className="hover:cursor-pointer"
+              className="hover:cursor-pointer transition-colors duration-200 hover:text-indigo-400"
             >
-              {following} following
+              <span className="font-semibold text-slate-200">{following}</span> following
             </span>
           </div>
-          <div style={{ gridColumn: "2", gridRow: "4" }}>{bio}</div>
+          <div style={{ gridColumn: "2", gridRow: "4" }} className="text-slate-300">{bio}</div>
           <button onClick={() => setEdit(true)} style={{ gridColumn: "3" }}>
             Edit Profile
           </button>
         </div>
-        <hr className="w-1/2 mb-5 mx-auto border-gray-700" />
-        <div className="w-1/2 mb-5 mx-auto text-3xl">Posts - </div>
+        <hr className="w-1/2 mb-5 mx-auto" />
+        <div className="w-1/2 mb-5 mx-auto text-3xl font-bold" style={gradientText}>Posts</div>
         <div className="mx-auto flex justify-center">
-          <div className="w-1/2 inline-block text-xl">
+          <div className="w-1/2 inline-block text-xl text-slate-400">
             {imgData.length == 0 && msgData.length == 0 && "No Posts Found"}
             {imgData.map(
               (

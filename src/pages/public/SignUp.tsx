@@ -76,17 +76,30 @@ export default function SignUp(props: props) {
   }
 
   return (
-    <div className="w-2/3 text-center mx-auto mt-10 bg-slate-200 rounded-3xl p-5 flex">
-      <div className="w-1/2 mx-auto xl:mx-0">
-        <div className="font-bold text-7xl my-5">Welcome</div>
-        <div className="text-xl">sign up and have fun!</div>
+    <div className="w-2/3 text-center mx-auto mt-10 rounded-3xl p-5 flex animate-fade-in overflow-hidden"
+         style={{
+           background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.6))',
+           border: '1px solid rgba(99, 102, 241, 0.15)',
+           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.1)',
+           backdropFilter: 'blur(20px)',
+         }}>
+      <div className="w-1/2 mx-auto xl:mx-0 flex flex-col items-center justify-center">
+        <div className="font-bold text-7xl my-5"
+             style={{
+               background: 'linear-gradient(135deg, #818cf8, #6366f1, #a78bfa)',
+               WebkitBackgroundClip: 'text',
+               WebkitTextFillColor: 'transparent',
+             }}>
+          Welcome
+        </div>
+        <div className="text-xl text-slate-400">sign up and have fun!</div>
         <div className="mt-12">
           <input
             type="text"
             id="uname"
             autoComplete="new-password"
             placeholder="Username"
-            className="w-96 h-16 p-4 my-2 text-xl rounded-3xl"
+            className="w-96 h-16 p-4 my-2 text-xl rounded-2xl"
           />
           <br />
           <input
@@ -94,7 +107,7 @@ export default function SignUp(props: props) {
             id="email"
             placeholder="Email"
             autoComplete="new-password"
-            className="w-96 h-16 p-4 my-2 text-xl rounded-3xl"
+            className="w-96 h-16 p-4 my-2 text-xl rounded-2xl"
           />
           <br />
           <input
@@ -102,7 +115,7 @@ export default function SignUp(props: props) {
             id="pass"
             autoComplete="new-password"
             placeholder="Password"
-            className="w-96 h-16 p-4 my-2 text-xl rounded-3xl"
+            className="w-96 h-16 p-4 my-2 text-xl rounded-2xl"
           />
           <br />
           <input
@@ -110,20 +123,28 @@ export default function SignUp(props: props) {
             id="repass"
             autoComplete="new-password"
             placeholder="Re-enter password"
-            className="w-96 h-16 p-4 my-2 text-xl rounded-3xl"
+            className="w-96 h-16 p-4 my-2 text-xl rounded-2xl"
           />
           <br />
-          <div className=" mt-16 mb-4 text-red-500 text-xl">{er}</div>
+          <div className="mt-8 mb-4 text-red-400 text-xl">{er}</div>
           <button
             onClick={submit}
-            className="w-32 h-16 p-4 mb-10 bg-white text-xl rounded-3xl"
+            className="w-40 h-14 p-3 mb-10 text-xl rounded-2xl font-semibold"
+            style={{
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              border: 'none',
+              boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+            }}
           >
-            sign up
+            Sign up
           </button>
         </div>
-        Already have an account? <Link to={"/sign-in"}>Sign in</Link>
+        <div className="text-slate-400">
+          Already have an account?{" "}
+          <Link to={"/sign-in"} className="font-semibold">Sign in</Link>
+        </div>
       </div>
-      <img src="signIn.jpeg" className="w-0 h-[48rem] rounded-3xl xl:w-1/2" />
+      <img src="signIn.jpeg" className="w-0 rounded-3xl xl:w-1/2 object-cover" style={{ maxHeight: '48rem', filter: 'brightness(0.85) contrast(1.1)' }} />
     </div>
   );
 }

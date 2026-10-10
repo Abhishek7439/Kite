@@ -1,5 +1,5 @@
 import { Key, MouseEventHandler, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { send, toImg } from "../../lib/io";
 import CreatePost from "./CreatePost";
 
@@ -23,24 +23,35 @@ interface searchProps {
 interface moreMenuProps {
   enabled: boolean;
   setUser: any;
-  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoggedIn?: any;
 }
 interface sidebarProps {
-  setUser: any;
-  user: any;
-  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setUser?: any;
+  user?: any;
+  setLoggedIn?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function SidebarPlate(props: plateProps) {
   return (
     <div
       onClick={props.action}
-      className="m-2 p-5 rounded-xl hover:cursor-pointer hover:bg-gray-300 transition-all duration-200"
+      className="m-2 p-5 rounded-xl hover:cursor-pointer transition-all duration-200"
+      style={{
+        color: '#cbd5e1',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'rgba(99, 102, 241, 0.15)';
+        e.currentTarget.style.color = '#818cf8';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = '#cbd5e1';
+      }}
     >
       <span className="material-symbols-rounded mr-10 ml-3 text-4xl">
         {props.icon}
       </span>
-      <div className="inline-block relative -translate-y-2">{props.name}</div>
+      <div className="inline-block relative -translate-y-2 font-medium">{props.name}</div>
     </div>
   );
 }
@@ -53,17 +64,25 @@ export function SearchPlate(props: searchPlateProps) {
   return (
     <div
       key={props.uname}
-      className="m-2 p-5 rounded-xl hover:cursor-pointer hover:bg-gray-300 transition-all duration-200"
+      className="m-2 p-5 rounded-xl hover:cursor-pointer transition-all duration-200"
+      style={{ color: '#e2e8f0' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'rgba(99, 102, 241, 0.15)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+      }}
       onClick={onClick}
     >
       <img
-        src={toImg(props.pfp)}
+        src={toImg(props.pfp, props.uname)}
         className="w-14 h-14 mr-7 rounded-full inline object-cover"
+        style={{ border: '2px solid rgba(99, 102, 241, 0.3)' }}
       />
       <div className="inline-block relative -translate-y-3 text-xl">
         {props.uname}
       </div>
-      <div className="inline-block relative -translate-x-14 translate-y-3">
+      <div className="inline-block relative -translate-x-14 translate-y-3 text-slate-400">
         {props.rname}
       </div>
     </div>
@@ -93,13 +112,22 @@ function SearchMenu(props: searchProps) {
   return (
     <div
       className={
-        "absolute w-80 h-screen z-10 bg-gray-200 transition-all " +
+        "absolute w-80 h-screen z-10 transition-all " +
         (props.enabled ? "left-80" : "left-0")
       }
+      style={{
+        background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(30, 27, 75, 0.95))',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(99, 102, 241, 0.15)',
+      }}
     >
-      <div className="h-full w-0.5 bg-slate-600 absolute"></div>
-      <div className="text-3xl mt-5 ml-4 mb-5">Search</div>
-      <hr className="h-0.5 mx-2 bg-slate-600 mb-3" />
+      <div className="text-3xl mt-5 ml-4 mb-5 font-bold"
+           style={{
+             background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
+             WebkitBackgroundClip: 'text',
+             WebkitTextFillColor: 'transparent',
+           }}>Search</div>
+      <hr className="mx-2 mb-3" />
       <input
         type="text"
         id="searchBar"
@@ -119,7 +147,12 @@ function SearchMenu(props: searchProps) {
 }
 function NotificationPlate({ str }: { str: string }) {
   return (
-    <div className="m-2 p-5 rounded-xl bg-gray-300 transition-all duration-200 overflow-clip">
+    <div className="m-2 p-5 rounded-xl transition-all duration-200 overflow-clip"
+         style={{
+           background: 'rgba(99, 102, 241, 0.1)',
+           border: '1px solid rgba(99, 102, 241, 0.15)',
+           color: '#e2e8f0',
+         }}>
       {str}
     </div>
   );
@@ -148,13 +181,22 @@ function NotificationMenu(props: { enabled: boolean; user: any }) {
   return (
     <div
       className={
-        "absolute w-96 h-screen z-10 bg-gray-200 transition-all " +
+        "absolute w-96 h-screen z-10 transition-all " +
         (props.enabled ? "left-80" : "-left-16")
       }
+      style={{
+        background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(30, 27, 75, 0.95))',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(99, 102, 241, 0.15)',
+      }}
     >
-      <div className="h-full w-0.5 bg-slate-600 absolute"></div>
-      <div className="text-3xl mt-5 ml-4 mb-5">Notifications</div>
-      <hr className="h-0.5 mx-2 bg-slate-600 mb-3" />
+      <div className="text-3xl mt-5 ml-4 mb-5 font-bold"
+           style={{
+             background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
+             WebkitBackgroundClip: 'text',
+             WebkitTextFillColor: 'transparent',
+           }}>Notifications</div>
+      <hr className="mx-2 mb-3" />
       <div>
         {list.map((el: any) => {
           return <NotificationPlate str={el[0]} key={el[0]} />;
@@ -168,9 +210,15 @@ function MoreMenu(props: moreMenuProps) {
   return (
     <div
       className={
-        "absolute w-72 bg-gray-200 rounded-xl z-40 left-2 bottom-28 overflow-hidden transition-all duration-100 " +
+        "absolute w-72 rounded-xl z-40 left-2 bottom-28 overflow-hidden transition-all duration-100 " +
         (!props.enabled ? "h-0" : "h-auto")
       }
+      style={{
+        background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95))',
+        border: '1px solid rgba(99, 102, 241, 0.2)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+        backdropFilter: 'blur(20px)',
+      }}
     >
       <SidebarPlate
         icon="logout"
@@ -212,8 +260,18 @@ export default function Sidebar(props: sidebarProps) {
       {createNewEnabled && (
         <CreatePost user={props.user} setEnabled={setCreateNewEnabled} />
       )}
-      <span className="fixed bg-gray-100 z-20 w-80 text-3xl h-full">
-        <span className="material-symbols-rounded text-4xl w-full py-7 pl-5 hover:cursor-pointer bg-gray-300">
+      <span className="fixed z-20 w-80 text-3xl h-full"
+            style={{
+              background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(30, 27, 75, 0.95))',
+              borderRight: '1px solid rgba(99, 102, 241, 0.15)',
+              backdropFilter: 'blur(20px)',
+            }}>
+        <span className="material-symbols-rounded text-4xl w-full py-7 pl-5 hover:cursor-pointer block font-bold"
+              style={{
+                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))',
+                color: '#818cf8',
+                borderBottom: '1px solid rgba(99, 102, 241, 0.15)',
+              }}>
           KITE
         </span>
         <SidebarPlate
@@ -248,12 +306,21 @@ export default function Sidebar(props: sidebarProps) {
         />
         <div
           onClick={() => setMoreEnabled(!moreEnabled)}
-          className="m-2 p-5 rounded-xl absolute w-72 bottom-0 hover:cursor-pointer hover:bg-gray-300 transition-all duration-200"
+          className="m-2 p-5 rounded-xl absolute w-72 bottom-0 hover:cursor-pointer transition-all duration-200"
+          style={{ color: '#cbd5e1' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(99, 102, 241, 0.15)';
+            e.currentTarget.style.color = '#818cf8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = '#cbd5e1';
+          }}
         >
           <span className="material-symbols-rounded mr-10 ml-3 text-4xl">
             Menu
           </span>
-          <div className="inline-block relative -translate-y-2">More</div>
+          <div className="inline-block relative -translate-y-2 font-medium">More</div>
         </div>
       </span>
     </>
